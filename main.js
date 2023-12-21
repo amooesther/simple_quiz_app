@@ -113,80 +113,143 @@ const questions =[
 
 ]
 
+
 const mainQuestion = document.getElementById('question');
 const theAnswers = document.getElementById('answerButtons');
-const nextButton= document.getElementById('nextBtn');
-
-let questionOne =0;
+const nextButton = document.getElementById('nextBtn');
+const startQuiz = document.getElementById('startQuizBtn');
+const timerDisplay = document.getElementById('timer');
+let questionOne = 0;
 let score = 0;
-function myQuiz(){
-    questionOne =0;
+let timer;
+
+mainQuestion.style.display = 'none';
+theAnswers.style.display = 'none';
+
+
+startQuiz.addEventListener('click', () => {
+
+    mainQuestion.style.display = 'block';
+  theAnswers.style.display = 'block';
+
+    startTimer(30 * questions.length);  
+    displayQuestion();
+});
+function myQuiz() {
+    questionOne = 0;
     score = 0;
-    nextButton.innerHTML="NEXT"
-    displayQuestion()
-}
-function displayQuestion(){
-resetPrevious();
-let currentQuestion=questions[questionOne];
-let questionNumber =questionOne + 1;
-mainQuestion.innerHTML=questionNumber +  ". " + currentQuestion.question;
+    nextButton.style.display = "none";
+    startQuiz.style.display = "block";
+    timerDisplay.style.display = "block";
+  
 
-currentQuestion.answers.forEach(answer =>{
-    const button=document.createElement('button');
-    button.innerHTML = answer.text;
-    button.classList.add('btn');
-    theAnswers.appendChild(button)
-    if(answer.correct){
-        button.dataset.correct=answer.correct;
-    }
-    button.addEventListener('click', chooseAnswer)
-})
+   
+
+    nextButton.innerHTML = "NEXT";
 }
 
-function resetPrevious(){
-    nextButton.style.display="none"
-    while(theAnswers.firstChild){
+
+function startTimer(durationInSeconds) {
+    let timeRemaining = durationInSeconds;
+
+    timer = setInterval(function () {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+
+        timerDisplay.innerHTML = `${minutes}:${seconds}`;
+
+        if (--timeRemaining < 0) {
+            clearInterval(timer);
+            displayScore();
+        }
+    }, 1000);
+}
+
+function displayQuestion() {
+    resetPrevious();
+    let currentQuestion = questions[questionOne];
+    let questionNumber = questionOne + 1;
+    mainQuestion.innerHTML = questionNumber + ". " + currentQuestion.question;
+
+    currentQuestion.answers.forEach((answer) => {
+        const button = document.createElement('button');
+        button.innerHTML = answer.text;
+        button.classList.add('btn');
+        theAnswers.appendChild(button);
+        if (answer.correct) {
+            button.dataset.correct = answer.correct;
+        }
+        button.addEventListener('click', chooseAnswer);
+    });
+}
+
+function resetPrevious() {
+    nextButton.style.display = "none";
+    while (theAnswers.firstChild) {
         theAnswers.removeChild(theAnswers.firstChild);
     }
 }
 
-function chooseAnswer(e){
-    const selectBtn=e.target;
-    const veryCorrect=selectBtn.dataset.correct==="true";
-    if(veryCorrect){
+function chooseAnswer(e) {
+    const selectBtn = e.target;
+    const veryCorrect = selectBtn.dataset.correct === "true";
+    if (veryCorrect) {
         selectBtn.classList.add('correct');
         score++;
-    }else{
-        selectBtn.classList.add('incorrect')
+    } else {
+        selectBtn.classList.add('incorrect');
     }
-    Array.from(theAnswers.children).forEach(button =>{
-        if(button.dataset.correct==="true"){
+    Array.from(theAnswers.children).forEach((button) => {
+        if (button.dataset.correct === "true") {
             button.classList.add("correct");
         }
-        button.disabled=true;
+        button.disabled = true;
     });
-    nextButton.style.display="block";
+    nextButton.style.display = "block";
 }
-function displayScore(){
+
+function displayScore() {
     resetPrevious();
-    mainQuestion.innerHTML=`Your score is ${score} out of ${questions.length}`;
-    nextButton.innerHTML="Take Quiz Again";
-    nextButton.style.display="block";
-};
-function goToNextButton(){
-    questionOne++
-    if(questionOne<questions.length){
+
+    if (timerDisplay.innerHTML === "0:0") {
+        mainQuestion.innerHTML = `Time has elapsed! Your quiz has ended. Your score is ${score} out of ${questions.length}`;
+    } else {
+        mainQuestion.innerHTML = `Your score is ${score} out of ${questions.length}`;
+    }
+
+    startQuiz.style.display = "none";
+    nextButton.innerHTML = "Take Quiz Again";
+    nextButton.style.display = "block";
+    nextButton.addEventListener('click', resetQuiz);
+}
+
+function resetQuiz() {
+    questionOne = 0;
+    score = 0;
+    clearInterval(timer);
+    timerDisplay.innerHTML = '';
+    nextButton.style.display = "none";
+    startQuiz.style.display = "none";
+    timerDisplay.style.display = "none";
+    nextButton.removeEventListener('click', resetQuiz);
+    myQuiz();
+}
+
+function goToNextButton() {
+    questionOne++;
+    if (questionOne < questions.length) {
         displayQuestion();
-    }else{
+    } else {
         displayScore();
     }
-};
-nextButton.addEventListener('click',()=>{
-    if( questionOne < questions.length){
-goToNextButton()
-    }else{
+}
+
+nextButton.addEventListener('click', () => {
+    if (questionOne < questions.length) {
+        goToNextButton();
+    } else {
         myQuiz();
     }
-})
+});
 
-myQuiz()
+myQuiz();

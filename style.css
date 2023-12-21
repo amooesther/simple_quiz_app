@@ -40,6 +40,23 @@ body{
     color: #333;
     font-weight: 600;
 }
+.timer{
+    justify-content: space-between;
+    color: tomato;
+    font-size: 20px;
+    display: flex;
+    margin-right: 20px;
+       
+}
+.timer button{
+    padding: 7px;
+    background-color: tomato;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+
+}
 .btn {
     background-color: whitesmoke;
     color: tomato;
@@ -83,6 +100,7 @@ body{
 .incorrect{
     background-color: #333;
 }
+
 
 @media (max-width: 600px) {
     .appWrapper {
