@@ -15,7 +15,7 @@ body{
 
 .appWrapper{
     width: 400px;
-    height: 450px;
+    height: 90vh;
     background-color: aquamarine;
     margin: 40px auto;
     border-radius: 20px;
